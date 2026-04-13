@@ -25,6 +25,12 @@
   <meta name="twitter:title"       content="logach.ru — Экосистема цифровых проектов" />
   <meta name="twitter:description" content="Цифровые проекты на поддоменах logach.ru. AI-инструменты, сервисы, инфраструктура." />
   <meta name="twitter:image"       content="https://logach.ru/og-image.png" />
+
+  <!-- Favicon -->
+  <link rel="icon"       type="image/x-icon" href="/favicon.ico" />
+  <link rel="icon"       type="image/png" sizes="32x32" href="/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/favicon-32.png" />
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -37,11 +43,11 @@
     }
 
     html, body {
-      width: 100%; height: 100%;
+      width: 100%; min-height: 100%;
       background: var(--dark);
       color: #e0eaff;
       font-family: 'Courier New', monospace;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     /* ─── canvas background ─── */
@@ -235,6 +241,43 @@
       line-height: 1.5;
     }
 
+    /* ─── socials ─── */
+    .socials-label {
+      font-size: .6rem; letter-spacing: .35em;
+      color: rgba(0,245,255,.35); text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .socials {
+      display: flex; gap: .7rem; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 2.8rem;
+    }
+    .soc {
+      display: flex; align-items: center; gap: .55rem;
+      border: 1px solid rgba(0,245,255,.14);
+      padding: .45rem .9rem;
+      font-size: .7rem; letter-spacing: .12em;
+      color: rgba(0,245,255,.65);
+      background: rgba(0,245,255,.03);
+      border-radius: 2px;
+      text-decoration: none;
+      transition: border-color .25s, background .25s, color .25s;
+      position: relative; overflow: hidden;
+    }
+    .soc::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(0,245,255,.07), transparent);
+      transform: translateX(-100%);
+      transition: transform .4s;
+    }
+    .soc:hover::before { transform: translateX(100%); }
+    .soc:hover {
+      border-color: rgba(0,245,255,.5);
+      background: rgba(0,245,255,.07);
+      color: #fff;
+    }
+    .soc svg { flex-shrink: 0; }
+
     /* ─── bottom line ─── */
     .footer {
       font-size: .62rem; letter-spacing: .25em;
@@ -335,11 +378,58 @@
       <div class="proj-name">API layer</div>
       <div class="proj-desc">Сервисная инфраструктура</div>
     </div>
-    <div class="proj">
-      <div class="proj-status">— SOON —</div>
-      <div class="proj-name">AI tools</div>
-      <div class="proj-desc">Инструменты на базе ИИ</div>
-    </div>
+  </div>
+
+  <p class="socials-label">// Читать автора</p>
+  <div class="socials">
+
+    <a class="soc" href="https://t.me/logachit" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      </svg>
+      Telegram
+    </a>
+
+    <a class="soc" href="https://www.instagram.com/logachit" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+        <circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/>
+      </svg>
+      Instagram
+    </a>
+
+    <a class="soc" href="https://pikabu.ru/@logachit" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+      </svg>
+      Пикабу
+    </a>
+
+    <a class="soc" href="https://dzen.ru/logachit" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+        <path d="M12 8c0 0-4 1-4 4s4 4 4 4"/>
+        <path d="M12 8c0 0 4 1 4 4s-4 4-4 4"/>
+      </svg>
+      Дзен
+    </a>
+
+    <a class="soc" href="https://vk.com/logachit" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14C20.67 22 22 20.67 22 15.07V8.93C22 3.33 20.67 2 15.07 2zm3.08 13.27h-1.64c-.62 0-.81-.49-1.93-1.62-1-.95-1.43-1.09-1.67-1.09-.34 0-.44.1-.44.57v1.49c0 .41-.13.65-1.21.65-1.78 0-3.76-1.08-5.15-3.08C4.85 9.93 4.33 8.27 4.33 7.9c0-.24.1-.47.57-.47h1.64c.43 0 .59.19.75.65.83 2.37 2.21 4.45 2.78 4.45.21 0 .31-.1.31-.65V9.63c-.07-1.16-.68-1.26-.68-1.67 0-.2.16-.4.42-.4h2.58c.36 0 .49.19.49.62v3.36c0 .36.16.49.26.49.21 0 .39-.13.78-.52 1.2-1.35 2.06-3.43 2.06-3.43.11-.24.31-.47.74-.47h1.64c.49 0 .6.25.49.57-.21 1-.22 1-.99 2.08l-.78 1.04c-.18.24-.24.34 0 .62.18.21.77.75 1.16 1.21.73.83 1.28 1.53 1.43 2.01.14.47-.09.7-.56.7z"/>
+      </svg>
+      ВКонтакте
+    </a>
+
+    <a class="soc" href="https://tenchat.ru/logachit" target="_blank" rel="noopener">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        <line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/>
+      </svg>
+      TenChat
+    </a>
+
   </div>
 
   <div class="footer">
