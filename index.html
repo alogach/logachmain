@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>logach.ru</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cyan: #00f5ff;
+      --blue: #0066ff;
+      --purple: #7b2fff;
+      --dark: #020510;
+      --grid: #0a1628;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--dark);
+      color: #e0eaff;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+    }
+
+    /* ─── canvas background ─── */
+    #bg { position: fixed; inset: 0; z-index: 0; }
+
+    /* ─── grid overlay ─── */
+    .grid {
+      position: fixed; inset: 0; z-index: 1;
+      background-image:
+        linear-gradient(rgba(0,245,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,245,255,.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridMove 20s linear infinite;
+    }
+    @keyframes gridMove {
+      from { background-position: 0 0; }
+      to   { background-position: 0 60px; }
+    }
+
+    /* ─── scanlines ─── */
+    .scanlines {
+      position: fixed; inset: 0; z-index: 2; pointer-events: none;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 2px,
+        rgba(0,0,0,.15) 2px,
+        rgba(0,0,0,.15) 4px
+      );
+    }
+
+    /* ─── main content ─── */
+    .stage {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 100vh; padding: 2rem;
+      text-align: center;
+    }
+
+    /* ─── glitch logo ─── */
+    .logo-wrap { position: relative; margin-bottom: 1.2rem; }
+
+    .logo {
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 900;
+      letter-spacing: .15em;
+      text-transform: lowercase;
+      color: #fff;
+      position: relative;
+      display: inline-block;
+      text-shadow:
+        0 0 20px var(--cyan),
+        0 0 60px rgba(0,245,255,.3);
+      animation: glitch 5s infinite;
+    }
+    .logo::before, .logo::after {
+      content: attr(data-text);
+      position: absolute; inset: 0;
+      clip-path: polygon(0 30%, 100% 30%, 100% 50%, 0 50%);
+    }
+    .logo::before {
+      color: var(--cyan);
+      animation: glitch-top 5s infinite;
+      left: 2px; text-shadow: none;
+    }
+    .logo::after {
+      color: var(--purple);
+      animation: glitch-bot 5s infinite;
+      left: -2px; text-shadow: none;
+      clip-path: polygon(0 55%, 100% 55%, 100% 75%, 0 75%);
+    }
+    @keyframes glitch {
+      0%,90%,100% { transform: skewX(0); }
+      91%          { transform: skewX(-1deg); }
+      93%          { transform: skewX(1deg); }
+      95%          { transform: skewX(0); }
+    }
+    @keyframes glitch-top {
+      0%,90%,100%  { transform: translateX(0); opacity: 0; }
+      91%          { transform: translateX(-4px); opacity: .8; }
+      93%          { transform: translateX(4px);  opacity: .8; }
+      95%          { transform: translateX(0);    opacity: 0; }
+    }
+    @keyframes glitch-bot {
+      0%,90%,100%  { transform: translateX(0); opacity: 0; }
+      92%          { transform: translateX(4px);  opacity: .7; }
+      94%          { transform: translateX(-4px); opacity: .7; }
+      95%          { transform: translateX(0);    opacity: 0; }
+    }
+
+    /* ─── domain suffix ─── */
+    .tld {
+      font-size: clamp(1rem, 3vw, 2rem);
+      color: var(--cyan);
+      letter-spacing: .4em;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 2.5rem;
+      animation: pulse 3s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: .5; }
+      50%      { opacity: .9; }
+    }
+
+    /* ─── tagline ─── */
+    .tagline {
+      font-size: clamp(.8rem, 2vw, 1.1rem);
+      color: rgba(224,234,255,.55);
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      max-width: 520px;
+      margin-bottom: 3.5rem;
+      line-height: 1.8;
+    }
+    .tagline span {
+      color: var(--cyan);
+      animation: blink 1.2s step-end infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* ─── status bar ─── */
+    .status {
+      display: flex; gap: 1.5rem; flex-wrap: wrap; justify-content: center;
+      margin-bottom: 3.5rem;
+    }
+    .stat {
+      border: 1px solid rgba(0,245,255,.18);
+      padding: .5rem 1.2rem;
+      font-size: .72rem;
+      letter-spacing: .2em;
+      color: rgba(0,245,255,.7);
+      background: rgba(0,245,255,.03);
+      border-radius: 2px;
+      animation: statPulse 4s ease-in-out infinite;
+    }
+    .stat:nth-child(2) { animation-delay: .7s; }
+    .stat:nth-child(3) { animation-delay: 1.4s; }
+    .stat:nth-child(4) { animation-delay: 2.1s; }
+    @keyframes statPulse {
+      0%,100% { border-color: rgba(0,245,255,.18); box-shadow: none; }
+      50%      { border-color: rgba(0,245,255,.5); box-shadow: 0 0 10px rgba(0,245,255,.15); }
+    }
+
+    /* ─── projects grid ─── */
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1px;
+      width: 100%; max-width: 800px;
+      border: 1px solid rgba(0,245,255,.08);
+      background: rgba(0,245,255,.04);
+      margin-bottom: 3rem;
+    }
+    .proj {
+      padding: 1.4rem 1.2rem;
+      border: 1px solid rgba(0,245,255,.06);
+      position: relative; overflow: hidden;
+      cursor: default;
+      transition: background .3s;
+    }
+    .proj::before {
+      content: '';
+      position: absolute; top: 0; left: -100%;
+      width: 100%; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      animation: scanLine 3s linear infinite;
+    }
+    .proj:nth-child(2)::before { animation-delay: .6s; }
+    .proj:nth-child(3)::before { animation-delay: 1.2s; }
+    .proj:nth-child(4)::before { animation-delay: 1.8s; }
+    @keyframes scanLine {
+      from { left: -100%; }
+      to   { left: 100%; }
+    }
+    .proj:hover { background: rgba(0,245,255,.06); }
+    .proj-status {
+      font-size: .6rem; letter-spacing: .3em;
+      color: var(--cyan); opacity: .5;
+      text-transform: uppercase; margin-bottom: .4rem;
+    }
+    .proj-status.active { color: #00ff88; opacity: .8; }
+    .proj-name {
+      font-size: .95rem; letter-spacing: .1em;
+      color: rgba(224,234,255,.8); font-weight: bold;
+    }
+    .proj-desc {
+      font-size: .68rem; letter-spacing: .1em;
+      color: rgba(224,234,255,.3); margin-top: .3rem;
+      line-height: 1.5;
+    }
+
+    /* ─── bottom line ─── */
+    .footer {
+      font-size: .62rem; letter-spacing: .25em;
+      color: rgba(0,245,255,.25);
+      text-transform: uppercase;
+    }
+
+    /* ─── orbiting ring ─── */
+    .ring-wrap {
+      position: fixed; z-index: 3;
+      width: min(600px, 90vw); height: min(600px, 90vw);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .ring {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      border: 1px solid rgba(0,245,255,.07);
+      animation: spin 30s linear infinite;
+    }
+    .ring:nth-child(2) {
+      inset: 15%;
+      border-color: rgba(123,47,255,.09);
+      animation-duration: 20s;
+      animation-direction: reverse;
+    }
+    .ring::after {
+      content: '';
+      position: absolute; top: 0; left: 50%;
+      width: 6px; height: 6px;
+      background: var(--cyan);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 12px var(--cyan);
+    }
+    .ring:nth-child(2)::after {
+      background: var(--purple);
+      box-shadow: 0 0 12px var(--purple);
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    /* ─── responsive ─── */
+    @media (max-width: 480px) {
+      .status { gap: .7rem; }
+      .stat   { padding: .4rem .8rem; }
+      .projects { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<div class="grid"></div>
+<div class="scanlines"></div>
+
+<div class="ring-wrap">
+  <div class="ring"></div>
+  <div class="ring"></div>
+</div>
+
+<main class="stage">
+
+  <div class="logo-wrap">
+    <div class="logo" data-text="logach">logach</div>
+  </div>
+
+  <div class="tld">.ru</div>
+
+  <p class="tagline">
+    Экосистема цифровых проектов<br>
+    построенных на грани возможного<span>_</span>
+  </p>
+
+  <div class="status">
+    <div class="stat">SYS&nbsp;ONLINE</div>
+    <div class="stat">NODE&nbsp;01&nbsp;ACTIVE</div>
+    <div class="stat">TLS&nbsp;SECURED</div>
+    <div class="stat">UPTIME&nbsp;99.9%</div>
+  </div>
+
+  <div class="projects">
+    <div class="proj">
+      <div class="proj-status active">— LIVE —</div>
+      <div class="proj-name">logach.ru</div>
+      <div class="proj-desc">Главный портал</div>
+    </div>
+    <div class="proj">
+      <div class="proj-status">— SOON —</div>
+      <div class="proj-name">*.logach.ru</div>
+      <div class="proj-desc">Проекты на поддоменах</div>
+    </div>
+    <div class="proj">
+      <div class="proj-status">— SOON —</div>
+      <div class="proj-name">API layer</div>
+      <div class="proj-desc">Сервисная инфраструктура</div>
+    </div>
+    <div class="proj">
+      <div class="proj-status">— SOON —</div>
+      <div class="proj-name">AI tools</div>
+      <div class="proj-desc">Инструменты на базе ИИ</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2026 logach.ru &nbsp;/&nbsp; building tomorrow
+  </div>
+
+</main>
+
+<script>
+/* ── Particle field ── */
+const canvas = document.getElementById('bg');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [], lines = [];
+const N = 90;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+function rand(a, b) { return a + Math.random() * (b - a); }
+
+class Particle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x  = rand(0, W);
+    this.y  = rand(0, H);
+    this.vx = rand(-.3, .3);
+    this.vy = rand(-.3, .3);
+    this.r  = rand(1, 2.5);
+    this.alpha = rand(.15, .55);
+    this.color = Math.random() > .5 ? '0,245,255' : '123,47,255';
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+    ctx.fill();
+  }
+}
+
+for (let i = 0; i < N; i++) particles.push(new Particle());
+
+/* ── Shooting stars ── */
+class Star {
+  constructor() { this.spawn(); }
+  spawn() {
+    this.x  = rand(0, W);
+    this.y  = rand(0, H * .5);
+    this.len = rand(80, 200);
+    this.speed = rand(8, 18);
+    this.alpha = rand(.4, .9);
+    this.life  = 0;
+    this.max   = this.len / this.speed;
+  }
+  update() {
+    this.x += this.speed * .7;
+    this.y += this.speed * .4;
+    this.life++;
+    if (this.life > this.max) this.spawn();
+  }
+  draw() {
+    const progress = this.life / this.max;
+    const alpha    = this.alpha * (1 - progress);
+    const x2 = this.x - this.len * .7 * (progress < .5 ? progress * 2 : 1);
+    const y2 = this.y - this.len * .4 * (progress < .5 ? progress * 2 : 1);
+    const g  = ctx.createLinearGradient(x2, y2, this.x, this.y);
+    g.addColorStop(0, `rgba(0,245,255,0)`);
+    g.addColorStop(1, `rgba(0,245,255,${alpha})`);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(this.x, this.y);
+    ctx.strokeStyle = g;
+    ctx.lineWidth   = 1.5;
+    ctx.stroke();
+  }
+}
+
+const shootingStars = [new Star(), new Star()];
+
+/* ── Connection lines ── */
+function drawConnections() {
+  const maxDist = 130;
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx   = particles[i].x - particles[j].x;
+      const dy   = particles[i].y - particles[j].y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < maxDist) {
+        const alpha = (1 - dist / maxDist) * .12;
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(0,245,255,${alpha})`;
+        ctx.lineWidth   = .6;
+        ctx.stroke();
+      }
+    }
+  }
+}
+
+/* ── Hexagonal pulse ── */
+let hexPulse = 0;
+function drawHex() {
+  hexPulse += .008;
+  const cx = W / 2, cy = H / 2;
+  for (let r = 1; r <= 4; r++) {
+    const rad    = r * 90 + Math.sin(hexPulse) * 15;
+    const alpha  = (.08 - r * .015) * (1 + .3 * Math.sin(hexPulse - r));
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const a = (Math.PI / 3) * i - Math.PI / 6;
+      const x = cx + rad * Math.cos(a);
+      const y = cy + rad * Math.sin(a);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = `rgba(0,245,255,${Math.max(0, alpha)})`;
+    ctx.lineWidth   = 1;
+    ctx.stroke();
+  }
+}
+
+/* ── Main loop ── */
+function loop() {
+  ctx.clearRect(0, 0, W, H);
+
+  /* radial bg glow */
+  const g = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, W * .6);
+  g.addColorStop(0, 'rgba(0,30,80,.35)');
+  g.addColorStop(1, 'rgba(2,5,16,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H);
+
+  drawHex();
+  drawConnections();
+  particles.forEach(p => { p.update(); p.draw(); });
+  shootingStars.forEach(s => { s.update(); s.draw(); });
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* ── Live data ticker in stat bars ── */
+const statEls = document.querySelectorAll('.stat');
+setInterval(() => {
+  const el  = statEls[1];
+  const ms  = Date.now();
+  const lat = (Math.random() * 1.5 + .5).toFixed(1);
+  el.textContent = `LAT  ${lat} ms`;
+}, 2000);
+
+setInterval(() => {
+  const el  = statEls[3];
+  const val = (99.7 + Math.random() * .3).toFixed(2);
+  el.textContent = `UPTIME  ${val}%`;
+}, 5000);
+</script>
+</body>
+</html>
